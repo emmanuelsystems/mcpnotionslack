@@ -316,7 +316,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.enum(["list-databases"]),
+    name: z.literal("list-databases"),
     arguments: z.object({}).optional()
   })
 }), async () => {
@@ -358,7 +358,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.enum(["query-database"]),
+    name: z.literal("query-database"),
     arguments: z.object({
       database_id: z.string(),
       filter: z.any().optional(),
@@ -407,7 +407,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.enum(["create-page"]),
+    name: z.literal("create-page"),
     arguments: z.object({
       parent_id: z.string(),
       properties: z.record(z.any()),
@@ -454,7 +454,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.enum(["update-page"]),
+    name: z.literal("update-page"),
     arguments: z.object({
       page_id: z.string(),
       properties: z.record(z.any()),
@@ -501,7 +501,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.enum(["create-database"]),
+    name: z.literal("create-database"),
     arguments: z.object({
       parent_id: z.string(),
       title: z.array(z.any()),
@@ -565,7 +565,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.enum(["update-database"]),
+    name: z.literal("update-database"),
     arguments: z.object({
       database_id: z.string(),
       title: z.array(z.any()).optional(),
@@ -620,7 +620,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.enum(["get-page"]),
+    name: z.literal("get-page"),
     arguments: z.object({
       page_id: z.string()
     })
@@ -659,7 +659,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.enum(["get-block-children"]),
+    name: z.literal("get-block-children"),
     arguments: z.object({
       block_id: z.string(),
       start_cursor: z.string().optional(),
@@ -709,7 +709,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.enum(["append-block-children"]),
+    name: z.literal("append-block-children"),
     arguments: z.object({
       block_id: z.string(),
       children: z.array(z.any()),
@@ -759,7 +759,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.enum(["update-block"]),
+    name: z.literal("update-block"),
     arguments: z.object({
       block_id: z.string(),
       block_type: z.string(),
@@ -810,7 +810,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.enum(["get-block"]),
+    name: z.literal("get-block"),
     arguments: z.object({
       block_id: z.string()
     })
@@ -849,7 +849,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.enum(["search"]),
+    name: z.literal("search"),
     arguments: z.object({
       query: z.string().optional(),
       filter: z.any().optional(),
