@@ -25,30 +25,3 @@
     "nodemon": "^3.0.2"
   }
 }
-{
-  "name": "notion-mcp-server",
-  "version": "1.0.0",
-  "description": "MCP server for Notion integration",
-  "type": "module",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
-  },
-  "keywords": [
-    "notion",
-    "mcp",
-    "model-context-protocol"
-  ],
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.7.0",
-    "@notionhq/client": "^2.2.14",
-    "dotenv": "^16.3.1",
-    "zod": "^3.22.4"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.2"
-  }
-}
