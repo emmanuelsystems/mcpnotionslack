@@ -1,4 +1,4 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { Client } from "@notionhq/client";
@@ -13,7 +13,7 @@ const notion = new Client({
 });
 
 // Create MCP server
-const server = new McpServer({
+const server = new Server({
   name: "notion-mcp",
   version: "1.0.0",
 });
