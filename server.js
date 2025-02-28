@@ -23,7 +23,10 @@ const server = new Server({
 });
 
 // Add a request interceptor for debugging
-server.setRequestHandler(z.any(), async (request) => {
+server.setRequestHandler(z.object({
+  method: z.string(),
+  params: z.any().optional()
+}), async (request) => {
   console.error("Received request:", JSON.stringify(request, null, 2));
   
   // Let the request continue to be handled by other handlers
