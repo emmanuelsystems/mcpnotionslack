@@ -309,80 +309,87 @@ server.setRequestHandler(z.object({
     arguments: z.object({}).optional()
   })
 }), async () => {
-  "list-databases",
-  "List all databases the integration has access to",
-  {},
-  async () => {
-    try {
-      const response = await notion.search({
-        filter: {
-          property: "object",
-          value: "database",
-        },
-        page_size: 100,
-        sort: {
-          direction: "descending",
-          timestamp: "last_edited_time",
-        },
-      });
+  try {
+    const response = await notion.search({
+      filter: {
+        property: "object",
+        value: "database",
+      },
+      page_size: 100,
+      sort: {
+        direction: "descending",
+        timestamp: "last_edited_time",
+      },
+    });
 
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(response.results, null, 2),
-          },
-        ],
-      };
-    } catch (error) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: "text",
-            text: `Error listing databases: ${error.message}`,
-          },
-        ],
-      };
-    }
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(response.results, null, 2),
+        },
+      ],
+    };
+  } catch (error) {
+    return {
+      isError: true,
+      content: [
+        {
+          type: "text",
+          text: `Error listing databases: ${error.message}`,
+        },
+      ],
+    };
   }
-);
+});
 
 // Query database tool
-server.tool(
-    try {
-      const queryParams = {
-        database_id,
-        page_size: page_size || 100,
-      };
+server.setRequestHandler(z.object({
+  method: z.literal("tools/call"),
+  params: z.object({
+    name: z.literal("query-database"),
+    arguments: z.object({
+      database_id: z.string(),
+      filter: z.any().optional(),
+      sorts: z.array(z.any()).optional(),
+      start_cursor: z.string().optional(),
+      page_size: z.number().optional()
+    })
+  })
+}), async (request) => {
+  const { database_id, filter, sorts, start_cursor, page_size } = request.params.arguments;
+  try {
+    const queryParams = {
+      database_id,
+      page_size: page_size || 100,
+    };
 
-      if (filter) queryParams.filter = filter;
-      if (sorts) queryParams.sorts = sorts;
-      if (start_cursor) queryParams.start_cursor = start_cursor;
+    if (filter) queryParams.filter = filter;
+    if (sorts) queryParams.sorts = sorts;
+    if (start_cursor) queryParams.start_cursor = start_cursor;
 
-      const response = await notion.databases.query(queryParams);
+    const response = await notion.databases.query(queryParams);
 
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(response, null, 2),
-          },
-        ],
-      };
-    } catch (error) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: "text",
-            text: `Error querying database: ${error.message}`,
-          },
-        ],
-      };
-    }
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(response, null, 2),
+        },
+      ],
+    };
+  } catch (error) {
+    return {
+      isError: true,
+      content: [
+        {
+          type: "text",
+          text: `Error querying database: ${error.message}`,
+        },
+      ],
+    };
   }
-);
+});
 
 // Create page tool
 server.setRequestHandler(z.object({
