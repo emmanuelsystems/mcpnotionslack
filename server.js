@@ -312,47 +312,40 @@ server.setRequestHandler(z.object({
   };
 });
 
-// Define tool handlers
+// Define a single CallToolRequestSchema handler for all tools
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.literal("list-databases"),
-    arguments: z.object({}).optional()
+    name: z.string(),
+    arguments: z.any()
   })
 }), async (request) => {
+  const { name, arguments: args } = request.params;
+  
   try {
-    const response = await notion.search({
-      filter: {
-        property: "object",
-        value: "database",
-      },
-      page_size: 100,
-      sort: {
-        direction: "descending",
-        timestamp: "last_edited_time",
-      },
-    });
+    // Handle each tool based on name
+    if (name === "list-databases") {
+      const response = await notion.search({
+        filter: {
+          property: "object",
+          value: "database",
+        },
+        page_size: 100,
+        sort: {
+          direction: "descending",
+          timestamp: "last_edited_time",
+        },
+      });
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(response.results, null, 2),
-        },
-      ],
-    };
-  } catch (error) {
-    return {
-      isError: true,
-      content: [
-        {
-          type: "text",
-          text: `Error listing databases: ${error.message}`,
-        },
-      ],
-    };
-  }
-});
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(response.results, null, 2),
+          },
+        ],
+      };
+    }
 
     else if (name === "query-database") {
       console.error("Query database handler called with:", JSON.stringify(args, null, 2));
