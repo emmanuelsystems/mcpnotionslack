@@ -16,6 +16,10 @@ const notion = new Client({
 const server = new Server({
   name: "notion-mcp",
   version: "1.0.0",
+}, {
+  capabilities: {
+    tools: {}
+  }
 });
 
 // List databases tool
