@@ -23,7 +23,292 @@ const server = new Server({
 });
 
 // List databases tool
-server.tool(
+server.setRequestHandler(z.object({
+  method: z.literal("tools/list")
+}), async () => {
+  return {
+    tools: [
+      {
+        name: "list-databases",
+        description: "List all databases the integration has access to",
+        inputSchema: {
+          type: "object",
+          properties: {}
+        }
+      },
+      {
+        name: "query-database",
+        description: "Query a database",
+        inputSchema: {
+          type: "object",
+          properties: {
+            database_id: {
+              type: "string",
+              description: "ID of the database to query"
+            },
+            filter: {
+              type: "object",
+              description: "Optional filter criteria"
+            },
+            sorts: {
+              type: "array",
+              description: "Optional sort criteria"
+            },
+            start_cursor: {
+              type: "string",
+              description: "Optional cursor for pagination"
+            },
+            page_size: {
+              type: "number",
+              description: "Number of results per page",
+              default: 100
+            }
+          },
+          required: ["database_id"]
+        }
+      },
+      {
+        name: "create-page",
+        description: "Create a new page in a database",
+        inputSchema: {
+          type: "object",
+          properties: {
+            parent_id: {
+              type: "string",
+              description: "ID of the parent database"
+            },
+            properties: {
+              type: "object",
+              description: "Page properties"
+            },
+            children: {
+              type: "array",
+              description: "Optional content blocks"
+            }
+          },
+          required: ["parent_id", "properties"]
+        }
+      },
+      {
+        name: "update-page",
+        description: "Update an existing page",
+        inputSchema: {
+          type: "object",
+          properties: {
+            page_id: {
+              type: "string",
+              description: "ID of the page to update"
+            },
+            properties: {
+              type: "object",
+              description: "Updated page properties"
+            },
+            archived: {
+              type: "boolean",
+              description: "Whether to archive the page"
+            }
+          },
+          required: ["page_id", "properties"]
+        }
+      },
+      {
+        name: "create-database",
+        description: "Create a new database",
+        inputSchema: {
+          type: "object",
+          properties: {
+            parent_id: {
+              type: "string",
+              description: "ID of the parent page"
+            },
+            title: {
+              type: "array",
+              description: "Database title as rich text array"
+            },
+            properties: {
+              type: "object",
+              description: "Database properties schema"
+            },
+            icon: {
+              type: "object",
+              description: "Optional icon for the database"
+            },
+            cover: {
+              type: "object",
+              description: "Optional cover for the database"
+            }
+          },
+          required: ["parent_id", "title", "properties"]
+        }
+      },
+      {
+        name: "update-database",
+        description: "Update an existing database",
+        inputSchema: {
+          type: "object",
+          properties: {
+            database_id: {
+              type: "string",
+              description: "ID of the database to update"
+            },
+            title: {
+              type: "array",
+              description: "Optional new title as rich text array"
+            },
+            description: {
+              type: "array",
+              description: "Optional new description as rich text array"
+            },
+            properties: {
+              type: "object",
+              description: "Optional updated properties schema"
+            }
+          },
+          required: ["database_id"]
+        }
+      },
+      {
+        name: "get-page",
+        description: "Retrieve a page by its ID",
+        inputSchema: {
+          type: "object",
+          properties: {
+            page_id: {
+              type: "string",
+              description: "ID of the page to retrieve"
+            }
+          },
+          required: ["page_id"]
+        }
+      },
+      {
+        name: "get-block-children",
+        description: "Retrieve the children blocks of a block",
+        inputSchema: {
+          type: "object",
+          properties: {
+            block_id: {
+              type: "string",
+              description: "ID of the block (page or block)"
+            },
+            start_cursor: {
+              type: "string",
+              description: "Cursor for pagination"
+            },
+            page_size: {
+              type: "number",
+              description: "Number of results per page",
+              default: 100
+            }
+          },
+          required: ["block_id"]
+        }
+      },
+      {
+        name: "append-block-children",
+        description: "Append blocks to a parent block",
+        inputSchema: {
+          type: "object",
+          properties: {
+            block_id: {
+              type: "string",
+              description: "ID of the parent block (page or block)"
+            },
+            children: {
+              type: "array",
+              description: "List of block objects to append"
+            },
+            after: {
+              type: "string",
+              description: "Optional ID of an existing block to append after"
+            }
+          },
+          required: ["block_id", "children"]
+        }
+      },
+      {
+        name: "update-block",
+        description: "Update a block's content or archive status",
+        inputSchema: {
+          type: "object",
+          properties: {
+            block_id: {
+              type: "string",
+              description: "ID of the block to update"
+            },
+            block_type: {
+              type: "string",
+              description: "The type of block (paragraph, heading_1, to_do, etc.)"
+            },
+            content: {
+              type: "object",
+              description: "The content for the block based on its type"
+            },
+            archived: {
+              type: "boolean",
+              description: "Whether to archive (true) or restore (false) the block"
+            }
+          },
+          required: ["block_id", "block_type", "content"]
+        }
+      },
+      {
+        name: "get-block",
+        description: "Retrieve a block by its ID",
+        inputSchema: {
+          type: "object",
+          properties: {
+            block_id: {
+              type: "string",
+              description: "ID of the block to retrieve"
+            }
+          },
+          required: ["block_id"]
+        }
+      },
+      {
+        name: "search",
+        description: "Search Notion for pages or databases",
+        inputSchema: {
+          type: "object",
+          properties: {
+            query: {
+              type: "string",
+              description: "Search query string",
+              default: ""
+            },
+            filter: {
+              type: "object",
+              description: "Optional filter criteria"
+            },
+            sort: {
+              type: "object",
+              description: "Optional sort criteria"
+            },
+            start_cursor: {
+              type: "string",
+              description: "Cursor for pagination"
+            },
+            page_size: {
+              type: "number",
+              description: "Number of results per page",
+              default: 100
+            }
+          }
+        }
+      }
+    ]
+  };
+});
+
+// Define tool handlers
+server.setRequestHandler(z.object({
+  method: z.literal("tools/call"),
+  params: z.object({
+    name: z.literal("list-databases"),
+    arguments: z.object({}).optional()
+  })
+}), async () => {
   "list-databases",
   "List all databases the integration has access to",
   {},
@@ -65,16 +350,6 @@ server.tool(
 
 // Query database tool
 server.tool(
-  "query-database",
-  "Query a database",
-  {
-    database_id: z.string().describe("ID of the database to query"),
-    filter: z.optional(z.any()).describe("Optional filter criteria"),
-    sorts: z.optional(z.array(z.any())).describe("Optional sort criteria"),
-    start_cursor: z.optional(z.string()).describe("Optional cursor for pagination"),
-    page_size: z.optional(z.number().default(100)).describe("Number of results per page"),
-  },
-  async ({ database_id, filter, sorts, start_cursor, page_size }) => {
     try {
       const queryParams = {
         database_id,
@@ -110,15 +385,18 @@ server.tool(
 );
 
 // Create page tool
-server.tool(
-  "create-page",
-  "Create a new page in a database",
-  {
-    parent_id: z.string().describe("ID of the parent database"),
-    properties: z.record(z.any()).describe("Page properties"),
-    children: z.optional(z.array(z.any())).describe("Optional content blocks"),
-  },
-  async ({ parent_id, properties, children }) => {
+server.setRequestHandler(z.object({
+  method: z.literal("tools/call"),
+  params: z.object({
+    name: z.literal("create-page"),
+    arguments: z.object({
+      parent_id: z.string(),
+      properties: z.record(z.any()),
+      children: z.array(z.any()).optional()
+    })
+  })
+}), async (request) => {
+  const { parent_id, properties, children } = request.params.arguments;
     try {
       const pageParams = {
         parent: { database_id: parent_id },
@@ -154,15 +432,18 @@ server.tool(
 );
 
 // Update page tool
-server.tool(
-  "update-page",
-  "Update an existing page",
-  {
-    page_id: z.string().describe("ID of the page to update"),
-    properties: z.record(z.any()).describe("Updated page properties"),
-    archived: z.optional(z.boolean()).describe("Whether to archive the page"),
-  },
-  async ({ page_id, properties, archived }) => {
+server.setRequestHandler(z.object({
+  method: z.literal("tools/call"),
+  params: z.object({
+    name: z.literal("update-page"),
+    arguments: z.object({
+      page_id: z.string(),
+      properties: z.record(z.any()),
+      archived: z.boolean().optional()
+    })
+  })
+}), async (request) => {
+  const { page_id, properties, archived } = request.params.arguments;
     try {
       const updateParams = {
         page_id,
@@ -198,17 +479,20 @@ server.tool(
 );
 
 // Create database tool
-server.tool(
-  "create-database",
-  "Create a new database",
-  {
-    parent_id: z.string().describe("ID of the parent page"),
-    title: z.array(z.any()).describe("Database title as rich text array"),
-    properties: z.record(z.any()).describe("Database properties schema"),
-    icon: z.optional(z.any()).describe("Optional icon for the database"),
-    cover: z.optional(z.any()).describe("Optional cover for the database"),
-  },
-  async ({ parent_id, title, properties, icon, cover }) => {
+server.setRequestHandler(z.object({
+  method: z.literal("tools/call"),
+  params: z.object({
+    name: z.literal("create-database"),
+    arguments: z.object({
+      parent_id: z.string(),
+      title: z.array(z.any()),
+      properties: z.record(z.any()),
+      icon: z.any().optional(),
+      cover: z.any().optional()
+    })
+  })
+}), async (request) => {
+  const { parent_id, title, properties, icon, cover } = request.params.arguments;
     try {
       // Remove dashes if present in parent_id
       parent_id = parent_id.replace(/-/g, "");
@@ -259,16 +543,19 @@ server.tool(
 );
 
 // Update database tool
-server.tool(
-  "update-database",
-  "Update an existing database",
-  {
-    database_id: z.string().describe("ID of the database to update"),
-    title: z.optional(z.array(z.any())).describe("Optional new title as rich text array"),
-    description: z.optional(z.array(z.any())).describe("Optional new description as rich text array"),
-    properties: z.optional(z.record(z.any())).describe("Optional updated properties schema"),
-  },
-  async ({ database_id, title, description, properties }) => {
+server.setRequestHandler(z.object({
+  method: z.literal("tools/call"),
+  params: z.object({
+    name: z.literal("update-database"),
+    arguments: z.object({
+      database_id: z.string(),
+      title: z.array(z.any()).optional(),
+      description: z.array(z.any()).optional(),
+      properties: z.record(z.any()).optional()
+    })
+  })
+}), async (request) => {
+  const { database_id, title, description, properties } = request.params.arguments;
     try {
       const updateParams = {
         database_id,
@@ -311,13 +598,16 @@ server.tool(
 );
 
 // Get page tool
-server.tool(
-  "get-page",
-  "Retrieve a page by its ID",
-  {
-    page_id: z.string().describe("ID of the page to retrieve"),
-  },
-  async ({ page_id }) => {
+server.setRequestHandler(z.object({
+  method: z.literal("tools/call"),
+  params: z.object({
+    name: z.literal("get-page"),
+    arguments: z.object({
+      page_id: z.string()
+    })
+  })
+}), async (request) => {
+  const { page_id } = request.params.arguments;
     try {
       // Remove dashes if present in page_id
       page_id = page_id.replace(/-/g, "");
@@ -347,15 +637,18 @@ server.tool(
 );
 
 // Get block children tool
-server.tool(
-  "get-block-children",
-  "Retrieve the children blocks of a block",
-  {
-    block_id: z.string().describe("ID of the block (page or block)"),
-    start_cursor: z.optional(z.string()).describe("Cursor for pagination"),
-    page_size: z.optional(z.number().default(100)).describe("Number of results per page"),
-  },
-  async ({ block_id, start_cursor, page_size }) => {
+server.setRequestHandler(z.object({
+  method: z.literal("tools/call"),
+  params: z.object({
+    name: z.literal("get-block-children"),
+    arguments: z.object({
+      block_id: z.string(),
+      start_cursor: z.string().optional(),
+      page_size: z.number().optional()
+    })
+  })
+}), async (request) => {
+  const { block_id, start_cursor, page_size } = request.params.arguments;
     try {
       // Remove dashes if present in block_id
       block_id = block_id.replace(/-/g, "");
@@ -394,15 +687,18 @@ server.tool(
 );
 
 // Append block children tool
-server.tool(
-  "append-block-children",
-  "Append blocks to a parent block",
-  {
-    block_id: z.string().describe("ID of the parent block (page or block)"),
-    children: z.array(z.any()).describe("List of block objects to append"),
-    after: z.optional(z.string()).describe("Optional ID of an existing block to append after"),
-  },
-  async ({ block_id, children, after }) => {
+server.setRequestHandler(z.object({
+  method: z.literal("tools/call"),
+  params: z.object({
+    name: z.literal("append-block-children"),
+    arguments: z.object({
+      block_id: z.string(),
+      children: z.array(z.any()),
+      after: z.string().optional()
+    })
+  })
+}), async (request) => {
+  const { block_id, children, after } = request.params.arguments;
     try {
       // Remove dashes if present in block_id
       block_id = block_id.replace(/-/g, "");
@@ -441,16 +737,19 @@ server.tool(
 );
 
 // Update block tool
-server.tool(
-  "update-block",
-  "Update a block's content or archive status",
-  {
-    block_id: z.string().describe("ID of the block to update"),
-    block_type: z.string().describe("The type of block (paragraph, heading_1, to_do, etc.)"),
-    content: z.record(z.any()).describe("The content for the block based on its type"),
-    archived: z.optional(z.boolean()).describe("Whether to archive (true) or restore (false) the block"),
-  },
-  async ({ block_id, block_type, content, archived }) => {
+server.setRequestHandler(z.object({
+  method: z.literal("tools/call"),
+  params: z.object({
+    name: z.literal("update-block"),
+    arguments: z.object({
+      block_id: z.string(),
+      block_type: z.string(),
+      content: z.record(z.any()),
+      archived: z.boolean().optional()
+    })
+  })
+}), async (request) => {
+  const { block_id, block_type, content, archived } = request.params.arguments;
     try {
       // Remove dashes if present in block_id
       block_id = block_id.replace(/-/g, "");
@@ -489,13 +788,16 @@ server.tool(
 );
 
 // Get block tool
-server.tool(
-  "get-block",
-  "Retrieve a block by its ID",
-  {
-    block_id: z.string().describe("ID of the block to retrieve"),
-  },
-  async ({ block_id }) => {
+server.setRequestHandler(z.object({
+  method: z.literal("tools/call"),
+  params: z.object({
+    name: z.literal("get-block"),
+    arguments: z.object({
+      block_id: z.string()
+    })
+  })
+}), async (request) => {
+  const { block_id } = request.params.arguments;
     try {
       // Remove dashes if present in block_id
       block_id = block_id.replace(/-/g, "");
@@ -525,17 +827,20 @@ server.tool(
 );
 
 // Search tool
-server.tool(
-  "search",
-  "Search Notion for pages or databases",
-  {
-    query: z.optional(z.string().default("")).describe("Search query string"),
-    filter: z.optional(z.any()).describe("Optional filter criteria"),
-    sort: z.optional(z.any()).describe("Optional sort criteria"),
-    start_cursor: z.optional(z.string()).describe("Cursor for pagination"),
-    page_size: z.optional(z.number().default(100)).describe("Number of results per page"),
-  },
-  async ({ query, filter, sort, start_cursor, page_size }) => {
+server.setRequestHandler(z.object({
+  method: z.literal("tools/call"),
+  params: z.object({
+    name: z.literal("search"),
+    arguments: z.object({
+      query: z.string().optional(),
+      filter: z.any().optional(),
+      sort: z.any().optional(),
+      start_cursor: z.string().optional(),
+      page_size: z.number().optional()
+    })
+  })
+}), async (request) => {
+  const { query, filter, sort, start_cursor, page_size } = request.params.arguments;
     try {
       const searchParams = {
         query: query || "",
