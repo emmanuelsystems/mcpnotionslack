@@ -316,11 +316,10 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.string(),
+    name: z.literal("list-databases"),
     arguments: z.object({}).optional()
   })
 }), async (request) => {
-  if (request.params.name !== "list-databases") return undefined;
   try {
     const response = await notion.search({
       filter: {
