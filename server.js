@@ -22,6 +22,14 @@ const server = new Server({
   }
 });
 
+// Add a request interceptor for debugging
+server.setRequestHandler(z.any(), async (request) => {
+  console.error("Received request:", JSON.stringify(request, null, 2));
+  
+  // Let the request continue to be handled by other handlers
+  return undefined;
+}, { priority: -1 });
+
 // List databases tool
 server.setRequestHandler(z.object({
   method: z.literal("tools/list")
@@ -347,7 +355,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.literal("query-database"),
+    name: z.enum(["query-database"]),
     arguments: z.object({
       database_id: z.string(),
       filter: z.any().optional(),
@@ -357,6 +365,7 @@ server.setRequestHandler(z.object({
     })
   })
 }), async (request) => {
+  console.error("Query database handler called with:", JSON.stringify(request.params, null, 2));
   const { database_id, filter, sorts, start_cursor, page_size } = request.params.arguments;
   try {
     const queryParams = {
@@ -896,6 +905,11 @@ async function main() {
   await server.connect(transport);
   console.error("Notion MCP Server running on stdio");
 }
+
+// Add error handling for unhandled rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
 
 main().catch((error) => {
   console.error("Fatal error in main():", error);
