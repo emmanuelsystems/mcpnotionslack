@@ -354,69 +354,34 @@ server.setRequestHandler(z.object({
   }
 });
 
-// Query database tool
-server.setRequestHandler(z.object({
-  method: z.literal("tools/call"),
-  params: z.object({
-    name: z.literal("query-database"),
-    arguments: z.object({
-      database_id: z.string(),
-      filter: z.any().optional(),
-      sorts: z.array(z.any()).optional(),
-      start_cursor: z.string().optional(),
-      page_size: z.number().optional()
-    })
-  })
-}), async (request) => {
-  console.error("Query database handler called with:", JSON.stringify(request.params, null, 2));
-  const { database_id, filter, sorts, start_cursor, page_size } = request.params.arguments;
-  try {
-    const queryParams = {
-      database_id,
-      page_size: page_size || 100,
-    };
+    else if (name === "query-database") {
+      console.error("Query database handler called with:", JSON.stringify(args, null, 2));
+      const { database_id, filter, sorts, start_cursor, page_size } = args;
+      
+      const queryParams = {
+        database_id,
+        page_size: page_size || 100,
+      };
 
-    if (filter) queryParams.filter = filter;
-    if (sorts) queryParams.sorts = sorts;
-    if (start_cursor) queryParams.start_cursor = start_cursor;
+      if (filter) queryParams.filter = filter;
+      if (sorts) queryParams.sorts = sorts;
+      if (start_cursor) queryParams.start_cursor = start_cursor;
 
-    const response = await notion.databases.query(queryParams);
+      const response = await notion.databases.query(queryParams);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(response, null, 2),
-        },
-      ],
-    };
-  } catch (error) {
-    return {
-      isError: true,
-      content: [
-        {
-          type: "text",
-          text: `Error querying database: ${error.message}`,
-        },
-      ],
-    };
-  }
-});
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(response, null, 2),
+          },
+        ],
+      };
+    }
 
-// Create page tool
-server.setRequestHandler(z.object({
-  method: z.literal("tools/call"),
-  params: z.object({
-    name: z.literal("create-page"),
-    arguments: z.object({
-      parent_id: z.string(),
-      properties: z.record(z.any()),
-      children: z.array(z.any()).optional()
-    })
-  })
-}), async (request) => {
-  const { parent_id, properties, children } = request.params.arguments;
-    try {
+    else if (name === "create-page") {
+      const { parent_id, properties, children } = args;
+      
       const pageParams = {
         parent: { database_id: parent_id },
         properties,
@@ -436,34 +401,11 @@ server.setRequestHandler(z.object({
           },
         ],
       };
-    } catch (error) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: "text",
-            text: `Error creating page: ${error.message}`,
-          },
-        ],
-      };
     }
-  }
-);
 
-// Update page tool
-server.setRequestHandler(z.object({
-  method: z.literal("tools/call"),
-  params: z.object({
-    name: z.literal("update-page"),
-    arguments: z.object({
-      page_id: z.string(),
-      properties: z.record(z.any()),
-      archived: z.boolean().optional()
-    })
-  })
-}), async (request) => {
-  const { page_id, properties, archived } = request.params.arguments;
-    try {
+    else if (name === "update-page") {
+      const { page_id, properties, archived } = args;
+      
       const updateParams = {
         page_id,
         properties,
@@ -483,36 +425,11 @@ server.setRequestHandler(z.object({
           },
         ],
       };
-    } catch (error) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: "text",
-            text: `Error updating page: ${error.message}`,
-          },
-        ],
-      };
     }
-  }
-);
 
-// Create database tool
-server.setRequestHandler(z.object({
-  method: z.literal("tools/call"),
-  params: z.object({
-    name: z.literal("create-database"),
-    arguments: z.object({
-      parent_id: z.string(),
-      title: z.array(z.any()),
-      properties: z.record(z.any()),
-      icon: z.any().optional(),
-      cover: z.any().optional()
-    })
-  })
-}), async (request) => {
-  const { parent_id, title, properties, icon, cover } = request.params.arguments;
-    try {
+    else if (name === "create-database") {
+      let { parent_id, title, properties, icon, cover } = args;
+      
       // Remove dashes if present in parent_id
       parent_id = parent_id.replace(/-/g, "");
 
@@ -547,35 +464,11 @@ server.setRequestHandler(z.object({
           },
         ],
       };
-    } catch (error) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: "text",
-            text: `Error creating database: ${error.message}`,
-          },
-        ],
-      };
     }
-  }
-);
 
-// Update database tool
-server.setRequestHandler(z.object({
-  method: z.literal("tools/call"),
-  params: z.object({
-    name: z.literal("update-database"),
-    arguments: z.object({
-      database_id: z.string(),
-      title: z.array(z.any()).optional(),
-      description: z.array(z.any()).optional(),
-      properties: z.record(z.any()).optional()
-    })
-  })
-}), async (request) => {
-  const { database_id, title, description, properties } = request.params.arguments;
-    try {
+    else if (name === "update-database") {
+      const { database_id, title, description, properties } = args;
+      
       const updateParams = {
         database_id,
       };
@@ -602,32 +495,11 @@ server.setRequestHandler(z.object({
           },
         ],
       };
-    } catch (error) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: "text",
-            text: `Error updating database: ${error.message}`,
-          },
-        ],
-      };
     }
-  }
-);
 
-// Get page tool
-server.setRequestHandler(z.object({
-  method: z.literal("tools/call"),
-  params: z.object({
-    name: z.literal("get-page"),
-    arguments: z.object({
-      page_id: z.string()
-    })
-  })
-}), async (request) => {
-  const { page_id } = request.params.arguments;
-    try {
+    else if (name === "get-page") {
+      let { page_id } = args;
+      
       // Remove dashes if present in page_id
       page_id = page_id.replace(/-/g, "");
 
@@ -641,34 +513,11 @@ server.setRequestHandler(z.object({
           },
         ],
       };
-    } catch (error) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: "text",
-            text: `Error retrieving page: ${error.message}`,
-          },
-        ],
-      };
     }
-  }
-);
 
-// Get block children tool
-server.setRequestHandler(z.object({
-  method: z.literal("tools/call"),
-  params: z.object({
-    name: z.literal("get-block-children"),
-    arguments: z.object({
-      block_id: z.string(),
-      start_cursor: z.string().optional(),
-      page_size: z.number().optional()
-    })
-  })
-}), async (request) => {
-  const { block_id, start_cursor, page_size } = request.params.arguments;
-    try {
+    else if (name === "get-block-children") {
+      let { block_id, start_cursor, page_size } = args;
+      
       // Remove dashes if present in block_id
       block_id = block_id.replace(/-/g, "");
 
@@ -691,34 +540,11 @@ server.setRequestHandler(z.object({
           },
         ],
       };
-    } catch (error) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: "text",
-            text: `Error retrieving block children: ${error.message}`,
-          },
-        ],
-      };
     }
-  }
-);
 
-// Append block children tool
-server.setRequestHandler(z.object({
-  method: z.literal("tools/call"),
-  params: z.object({
-    name: z.literal("append-block-children"),
-    arguments: z.object({
-      block_id: z.string(),
-      children: z.array(z.any()),
-      after: z.string().optional()
-    })
-  })
-}), async (request) => {
-  const { block_id, children, after } = request.params.arguments;
-    try {
+    else if (name === "append-block-children") {
+      let { block_id, children, after } = args;
+      
       // Remove dashes if present in block_id
       block_id = block_id.replace(/-/g, "");
 
@@ -741,35 +567,11 @@ server.setRequestHandler(z.object({
           },
         ],
       };
-    } catch (error) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: "text",
-            text: `Error appending block children: ${error.message}`,
-          },
-        ],
-      };
     }
-  }
-);
 
-// Update block tool
-server.setRequestHandler(z.object({
-  method: z.literal("tools/call"),
-  params: z.object({
-    name: z.literal("update-block"),
-    arguments: z.object({
-      block_id: z.string(),
-      block_type: z.string(),
-      content: z.record(z.any()),
-      archived: z.boolean().optional()
-    })
-  })
-}), async (request) => {
-  const { block_id, block_type, content, archived } = request.params.arguments;
-    try {
+    else if (name === "update-block") {
+      let { block_id, block_type, content, archived } = args;
+      
       // Remove dashes if present in block_id
       block_id = block_id.replace(/-/g, "");
 
@@ -792,32 +594,11 @@ server.setRequestHandler(z.object({
           },
         ],
       };
-    } catch (error) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: "text",
-            text: `Error updating block: ${error.message}`,
-          },
-        ],
-      };
     }
-  }
-);
 
-// Get block tool
-server.setRequestHandler(z.object({
-  method: z.literal("tools/call"),
-  params: z.object({
-    name: z.literal("get-block"),
-    arguments: z.object({
-      block_id: z.string()
-    })
-  })
-}), async (request) => {
-  const { block_id } = request.params.arguments;
-    try {
+    else if (name === "get-block") {
+      let { block_id } = args;
+      
       // Remove dashes if present in block_id
       block_id = block_id.replace(/-/g, "");
 
@@ -831,36 +612,11 @@ server.setRequestHandler(z.object({
           },
         ],
       };
-    } catch (error) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: "text",
-            text: `Error retrieving block: ${error.message}`,
-          },
-        ],
-      };
     }
-  }
-);
 
-// Search tool
-server.setRequestHandler(z.object({
-  method: z.literal("tools/call"),
-  params: z.object({
-    name: z.literal("search"),
-    arguments: z.object({
-      query: z.string().optional(),
-      filter: z.any().optional(),
-      sort: z.any().optional(),
-      start_cursor: z.string().optional(),
-      page_size: z.number().optional()
-    })
-  })
-}), async (request) => {
-  const { query, filter, sort, start_cursor, page_size } = request.params.arguments;
-    try {
+    else if (name === "search") {
+      const { query, filter, sort, start_cursor, page_size } = args;
+      
       const searchParams = {
         query: query || "",
         page_size: page_size || 100,
@@ -888,19 +644,30 @@ server.setRequestHandler(z.object({
           },
         ],
       };
-    } catch (error) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: "text",
-            text: `Error searching Notion: ${error.message}`,
-          },
-        ],
-      };
     }
+    
+    // If we get here, the tool name wasn't recognized
+    return {
+      isError: true,
+      content: [
+        {
+          type: "text",
+          text: `Unknown tool: ${name}`,
+        },
+      ],
+    };
+  } catch (error) {
+    return {
+      isError: true,
+      content: [
+        {
+          type: "text",
+          text: `Error executing ${name}: ${error.message}`,
+        },
+      ],
+    };
   }
-);
+});
 
 // Start the server
 async function main() {
