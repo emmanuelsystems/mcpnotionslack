@@ -359,7 +359,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.string(),
+    name: z.literal("query-database"),
     arguments: z.object({
       database_id: z.string(),
       filter: z.any().optional(),
@@ -369,7 +369,6 @@ server.setRequestHandler(z.object({
     })
   })
 }), async (request) => {
-  if (request.params.name !== "query-database") return undefined;
   console.error("Query database handler called with:", JSON.stringify(request.params, null, 2));
   const { database_id, filter, sorts, start_cursor, page_size } = request.params.arguments;
   try {
@@ -409,7 +408,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.string(),
+    name: z.literal("create-page"),
     arguments: z.object({
       parent_id: z.string(),
       properties: z.record(z.any()),
@@ -417,7 +416,6 @@ server.setRequestHandler(z.object({
     })
   })
 }), async (request) => {
-  if (request.params.name !== "create-page") return undefined;
   const { parent_id, properties, children } = request.params.arguments;
     try {
       const pageParams = {
@@ -457,7 +455,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.string(),
+    name: z.literal("update-page"),
     arguments: z.object({
       page_id: z.string(),
       properties: z.record(z.any()),
@@ -465,7 +463,6 @@ server.setRequestHandler(z.object({
     })
   })
 }), async (request) => {
-  if (request.params.name !== "update-page") return undefined;
   const { page_id, properties, archived } = request.params.arguments;
     try {
       const updateParams = {
@@ -505,7 +502,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.string(),
+    name: z.literal("create-database"),
     arguments: z.object({
       parent_id: z.string(),
       title: z.array(z.any()),
@@ -515,7 +512,6 @@ server.setRequestHandler(z.object({
     })
   })
 }), async (request) => {
-  if (request.params.name !== "create-database") return undefined;
   const { parent_id, title, properties, icon, cover } = request.params.arguments;
     try {
       // Remove dashes if present in parent_id
@@ -570,7 +566,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.string(),
+    name: z.literal("update-database"),
     arguments: z.object({
       database_id: z.string(),
       title: z.array(z.any()).optional(),
@@ -579,7 +575,6 @@ server.setRequestHandler(z.object({
     })
   })
 }), async (request) => {
-  if (request.params.name !== "update-database") return undefined;
   const { database_id, title, description, properties } = request.params.arguments;
     try {
       const updateParams = {
@@ -626,13 +621,12 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.string(),
+    name: z.literal("get-page"),
     arguments: z.object({
       page_id: z.string()
     })
   })
 }), async (request) => {
-  if (request.params.name !== "get-page") return undefined;
   const { page_id } = request.params.arguments;
     try {
       // Remove dashes if present in page_id
@@ -666,7 +660,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.string(),
+    name: z.literal("get-block-children"),
     arguments: z.object({
       block_id: z.string(),
       start_cursor: z.string().optional(),
@@ -674,7 +668,6 @@ server.setRequestHandler(z.object({
     })
   })
 }), async (request) => {
-  if (request.params.name !== "get-block-children") return undefined;
   const { block_id, start_cursor, page_size } = request.params.arguments;
     try {
       // Remove dashes if present in block_id
@@ -717,7 +710,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.string(),
+    name: z.literal("append-block-children"),
     arguments: z.object({
       block_id: z.string(),
       children: z.array(z.any()),
@@ -725,7 +718,6 @@ server.setRequestHandler(z.object({
     })
   })
 }), async (request) => {
-  if (request.params.name !== "append-block-children") return undefined;
   const { block_id, children, after } = request.params.arguments;
     try {
       // Remove dashes if present in block_id
@@ -768,7 +760,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.string(),
+    name: z.literal("update-block"),
     arguments: z.object({
       block_id: z.string(),
       block_type: z.string(),
@@ -777,7 +769,6 @@ server.setRequestHandler(z.object({
     })
   })
 }), async (request) => {
-  if (request.params.name !== "update-block") return undefined;
   const { block_id, block_type, content, archived } = request.params.arguments;
     try {
       // Remove dashes if present in block_id
@@ -820,13 +811,12 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.string(),
+    name: z.literal("get-block"),
     arguments: z.object({
       block_id: z.string()
     })
   })
 }), async (request) => {
-  if (request.params.name !== "get-block") return undefined;
   const { block_id } = request.params.arguments;
     try {
       // Remove dashes if present in block_id
@@ -860,7 +850,7 @@ server.setRequestHandler(z.object({
 server.setRequestHandler(z.object({
   method: z.literal("tools/call"),
   params: z.object({
-    name: z.string(),
+    name: z.literal("search"),
     arguments: z.object({
       query: z.string().optional(),
       filter: z.any().optional(),
@@ -870,7 +860,6 @@ server.setRequestHandler(z.object({
     })
   })
 }), async (request) => {
-  if (request.params.name !== "search") return undefined;
   const { query, filter, sort, start_cursor, page_size } = request.params.arguments;
     try {
       const searchParams = {
