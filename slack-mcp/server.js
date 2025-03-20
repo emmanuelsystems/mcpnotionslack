@@ -59,7 +59,7 @@ async function startServer() {
             console.log(`🚀 Slack MCP Server running on port ${port}`);
             
             // Log available channels
-            if (config.SLACK_CHANNELS.length > 0) {
+            if (config.SLACK_CHANNELS && config.SLACK_CHANNELS.length > 0) {
                 console.log('📢 Monitoring channels:', config.SLACK_CHANNELS.join(', '));
             } else {
                 console.log('📢 No specific channels configured, will respond to all channels');
