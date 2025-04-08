@@ -1,5 +1,7 @@
 # Notion MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@emmanuelsystems/mcpnotionslack)](https://smithery.ai/server/@emmanuelsystems/mcpnotionslack)
+
 A Model Context Protocol (MCP) server that connects Claude and other AI assistants to your Notion workspace. This integration allows AI assistants to interact with your Notion databases, pages, and blocks.
 
 ## What is this?
