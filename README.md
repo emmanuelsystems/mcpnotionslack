@@ -146,6 +146,35 @@ If you encounter issues not covered here, please:
 - Ensure your Notion API key is valid
 - Verify that your integration has access to the pages/databases
 
+## Running Tests
+
+### Environment Setup
+
+1. Copy `.env.example` to `.env`
+2. Fill in all required tokens such as `NOTION_API_KEY`, `NOTION_DATABASE_ID`,
+   `SLACK_BOT_TOKEN`, and `SLACK_APP_TOKEN`
+
+### Python Tests
+
+Run each test file directly with Python:
+
+```bash
+python test_notion.py
+python test_database.py
+python test_create_entry.py
+python test_add_content.py
+python test_read_content.py
+python test_update_entry.py
+```
+
+### Node Tests
+
+Execute individual Node test scripts using Node. For example:
+
+```bash
+node slack-mcp/test_mcp_server.js
+```
+
 ## License
 
 MIT
